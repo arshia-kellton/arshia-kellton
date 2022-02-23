@@ -33,7 +33,8 @@ return Scaffold(
           GestureDetector(
             onTap: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (BuildContext context) => InputPage()));            },
+                  MaterialPageRoute(builder: (BuildContext context) => InputPage()));
+              },
             child: Text(
 
               "BMI Calculator",
