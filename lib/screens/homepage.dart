@@ -3,8 +3,10 @@ import 'package:demo_app/constants/dimensions.dart';
 import 'package:demo_app/screens/bmi/input_page.dart';
 import 'package:demo_app/screens/quizmainscreen.dart';
 import 'package:demo_app/screens/timer.dart';
+import 'package:demo_app/screens/weather/loading_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -30,6 +32,7 @@ return Scaffold(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
+          
           GestureDetector(
             onTap: () {
               Navigator.push(context,
@@ -71,7 +74,7 @@ return Scaffold(
           GestureDetector(
             onTap: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (BuildContext context) => Quizmainscreen()));            },
+                  MaterialPageRoute(builder: (BuildContext context) => Quizmainscreen()));  },
             child: Text(
 
               "QuizApp",
@@ -83,10 +86,32 @@ return Scaffold(
               ),
             ),
           ),
+          SizedBox(
+            height: 10,
+          ),
+          RaisedButton(
+              elevation: 5.0,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(40.0)),
+              color: Color(0xFF6bc334),
+              child: Text(
+                "Get Location",
+                style: TextStyle(
+                    fontSize: Dimensions.textExtraSmall, color: Colors.black),
+              ),
+              onPressed: getLocation)
         ],
 
       ),
     );
+
+  }
+
+   getLocation() {
+     Navigator.push(context,
+         MaterialPageRoute(builder: (BuildContext context) => LoadingScreen()));
+     /*   Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+     print(position);*/
 
   }
 }
