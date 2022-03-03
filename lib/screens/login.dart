@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:demo_app/constants/dimensions.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -19,6 +21,8 @@ class _State extends State<Login> {
   late String _email, _password;
   String _emailResult = "", _passwordResult = "";
   TextEditingController userNameController = TextEditingController();
+  final _auth = FirebaseAuth.instance;
+  bool showSpinner = false;
 
   TextEditingController passwordController = TextEditingController();
 
@@ -32,27 +36,31 @@ class _State extends State<Login> {
   }
 
   _body() {
-    return Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-            child: SafeArea(
-                top: true,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    logo(),
-                    loginText(),
-                    line(),
-                    emailField(),
-                    passwordField(),
-                    loginButton(),
-                    signUp(),
-                    emailResult(),
-                    pwdResult()
-                  ],
-                ))));
+    return ModalProgressHUD(
+      inAsyncCall: showSpinner,
+
+      child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+              child: SafeArea(
+                  top: true,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      logo(),
+                      loginText(),
+                      line(),
+                      emailField(),
+                      passwordField(),
+                      loginButton(),
+                      signUp(),
+                      emailResult(),
+                      pwdResult()
+                    ],
+                  )))),
+    );
   }
   Widget loginText() {
     return Padding(
@@ -249,14 +257,34 @@ class _State extends State<Login> {
       return null;
   }
 
-  _performLogin() {
+  _performLogin() async {
     final form = _formKey.currentState;
     if (_formKey.currentState!.validate()) {
       form!.save();
-      doLoginTask();
-      Navigator.push(context,
-          MaterialPageRoute(builder: (BuildContext context) => HomePage()));
-    } else {}
+      /*Navigator.push(context,
+          MaterialPageRoute(builder: (BuildContext context) => HomePage()));*/
+      {
+        setState(() {
+          showSpinner = true;
+        });
+        try {
+          final user = await _auth.signInWithEmailAndPassword(
+              email: userNameController.text,
+              password: passwordController.text);
+          if (user != null) {
+            Navigator.push(context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) => HomePage()));
+          }
+
+          setState(() {
+            showSpinner = false;
+          });
+        } catch (e) {
+          print(e);
+        }
+      }
+    }
   }
 
   @override
@@ -264,10 +292,5 @@ class _State extends State<Login> {
     super.initState();
   }
 
-  doLoginTask() {
-    setState(() {
-      _emailResult = _email;
-      _passwordResult = _password;
-    });
-  }
+
 }

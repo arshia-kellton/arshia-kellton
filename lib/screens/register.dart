@@ -1,6 +1,10 @@
 import 'package:demo_app/constants/dimensions.dart';
+import 'package:demo_app/screens/homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+
 
 import 'login.dart';
  class Register extends StatefulWidget{
@@ -9,8 +13,13 @@ import 'login.dart';
  }
 class _RegisterState extends State<Register> {
   final _formKey = new GlobalKey<FormState>();
-  late String _email, _password, _confirmPassword, _userName, _class;
+   late String _email, _password,_userName,_confirmPassword ;
+   late String  _emailresult,passwordresult;
+  final _auth = FirebaseAuth.instance;
+  bool showSpinner = false;
+  TextEditingController userNameController = TextEditingController();
 
+  TextEditingController passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -21,25 +30,28 @@ class _RegisterState extends State<Register> {
 
   _body() {
 
-      return Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  logo(),
-                  loginText(),
-                  line(),
-                  usernameField(),
-                  emailField(),
-                  passwordField(),
-                  confirmPasswordField(),
-                  signUpButton(),
-                  signUp()
-                ],
-              )));
+      return ModalProgressHUD(
+        inAsyncCall: showSpinner,
+        child: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    logo(),
+                    loginText(),
+                    line(),
+                    usernameField(),
+                    emailField(),
+                    passwordField(),
+                    confirmPasswordField(),
+                    signUpButton(),
+                    signUp()
+                  ],
+                ))),
+      );
     }
   Widget logo() {
     return Padding(
@@ -91,6 +103,7 @@ class _RegisterState extends State<Register> {
       child: TextFormField(
         textInputAction: TextInputAction.next,
         maxLines: 1,
+        controller: userNameController,
         cursorColor: Color(0xFFe5d429),
         keyboardType: TextInputType.text,
         autofocus: false,
@@ -106,8 +119,10 @@ class _RegisterState extends State<Register> {
        // validator: (value) => value.isEmpty ? "Email is mandatory" : null,
         onFieldSubmitted: (value) => FocusScope.of(context).nextFocus(),
         onSaved: ( value) => _email = value!.trim(),
+
       ),
     );
+    print("_email"+_email);
   }
 
   Widget usernameField() {
@@ -136,10 +151,12 @@ class _RegisterState extends State<Register> {
 
   Widget passwordField() {
     return Padding(
+
       padding: const EdgeInsets.fromLTRB(40, 20.0, 40.0, 0.0),
       child: TextFormField(
         textInputAction: TextInputAction.next,
         maxLines: 1,
+        controller: passwordController,
         cursorColor: Color(0xFFe5d429),
         keyboardType: TextInputType.visiblePassword,
         obscureText: true,
@@ -180,6 +197,7 @@ class _RegisterState extends State<Register> {
                 borderSide: BorderSide(color: Color(0xFFe5d429)))),
         onFieldSubmitted: (value) => FocusScope.of(context).nextFocus(),
         onSaved: (value) => _confirmPassword = value!.trim(),
+
       ),
     );
   }
@@ -202,8 +220,11 @@ class _RegisterState extends State<Register> {
                 style: TextStyle(
                     fontSize: Dimensions.textSmall, color: Colors.white),
               ),
-              onPressed: _performSignUp),
-        ));
+              onPressed: _performSignUp
+          ),));
+
+
+
   }
 
   Widget signUp() {
@@ -235,10 +256,41 @@ class _RegisterState extends State<Register> {
         context, MaterialPageRoute(builder: (BuildContext context) => Login()));
   }
 
+/*  doSignupTask() {
+    setState(() {
+      _emailresult = _email;
+      passwordresult = _password;
+      print("emailresult"+_email);
+      print("pwdresult"+_email);
+    });
+  }*/
 
-
-  _performSignUp() {
+  _performSignUp() async {
     final form = _formKey.currentState;
-   print("Signup done!");
+    if (_formKey.currentState!.validate()) {
+      form!.save();
+    }
+      {
+      setState(() {
+        showSpinner = true;
+      });
+      try {
+
+        final newUser = await _auth.createUserWithEmailAndPassword(
+            email: userNameController.text, password: passwordController.text);
+        if (newUser != null) {
+          print(newUser.credential);
+
+        Navigator.push(
+              context, MaterialPageRoute(builder: (BuildContext context) => HomePage()));
+        }
+
+        setState(() {
+          showSpinner = false;
+        });
+      } catch (e) {
+        print(e);
+      }
+    };
   }
 }

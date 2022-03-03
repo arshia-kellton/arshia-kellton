@@ -7,6 +7,7 @@ import 'package:demo_app/screens/weather/loading_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:demo_app/screens/chat/chat_screen.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -79,6 +80,25 @@ return Scaffold(
 
               "QuizApp",
               textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: Dimensions.textLarge,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (BuildContext context) => ChatScreen()));
+            },
+            child: Text(
+              "ChatApp",
+              textAlign: TextAlign.center,
+
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: Dimensions.textLarge,
