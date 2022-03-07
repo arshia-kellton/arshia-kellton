@@ -4,6 +4,8 @@ import './chat_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demo_app/screens/bmi/constants/constants.dart';
+import 'package:demo_app/utilities/sharedPrefrence.dart';
+
 
 final _firestore =  FirebaseFirestore.instance;
 User? loggedInUser;
@@ -47,6 +49,8 @@ class _ChatScreenState extends State<ChatScreen> {
               icon: Icon(Icons.close),
               onPressed: () {
                 _auth.signOut();
+                SharedPrefUtil.setLoginStatus("LOGIN_STATUS", false);
+
                 Navigator.pop(context);
                 Navigator.push(
                     context, MaterialPageRoute(builder: (BuildContext context) => Login()));

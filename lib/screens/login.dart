@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:demo_app/utilities/sharedPrefrence.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -272,6 +273,8 @@ class _State extends State<Login> {
               email: userNameController.text,
               password: passwordController.text);
           if (user != null) {
+            SharedPrefUtil.setLoginStatus("LOGIN_STATUS", true);
+
             Navigator.push(context,
                 MaterialPageRoute(
                     builder: (BuildContext context) => HomePage()));

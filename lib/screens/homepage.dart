@@ -3,6 +3,9 @@ import 'package:demo_app/constants/dimensions.dart';
 import 'package:demo_app/screens/bmi/input_page.dart';
 import 'package:demo_app/screens/quizmainscreen.dart';
 import 'package:demo_app/screens/timer.dart';
+import 'package:demo_app/screens/todo/add_task_screen.dart';
+import 'package:demo_app/screens/todo/tasks_screen.dart';
+import 'package:demo_app/screens/todo/widegt/tasks_list.dart';
 import 'package:demo_app/screens/weather/loading_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -97,6 +100,25 @@ return Scaffold(
             },
             child: Text(
               "ChatApp",
+              textAlign: TextAlign.center,
+
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: Dimensions.textLarge,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (BuildContext context) => TasksScreen()));
+            },
+            child: Text(
+              "Todo",
               textAlign: TextAlign.center,
 
               style: TextStyle(
